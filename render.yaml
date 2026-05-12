@@ -1,0 +1,15 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+# After connect repo, Render may detect this automatically.
+services:
+  - type: web
+    name: recomsys-api
+    runtime: python
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      # Required for trailers via TMDB (set in Dashboard if not here):
+      # - key: TMDB_API_KEY
+      #   sync: false

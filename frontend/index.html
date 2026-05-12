@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RecomSys v2</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <header class="header">
+      <div class="container header__inner">
+        <div class="brand">
+          <div class="brand__mark">RS</div>
+          <div class="brand__text">
+            <div class="brand__title">RecomSys v2</div>
+            <div class="brand__subtitle">Deep recommendations from Synopsis + Genre</div>
+          </div>
+        </div>
+
+        <div class="header__right">
+          <button
+            type="button"
+            id="filterOpenBtn"
+            class="iconbtn"
+            title="Filters"
+            aria-label="Open filters"
+            aria-expanded="false"
+            aria-controls="filterPanel"
+          >
+            <svg class="iconbtn__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"
+              />
+            </svg>
+          </button>
+
+          <div class="api">
+            <button id="authBtn" class="btn btn--ghost btn--sm">Sign in</button>
+            <label class="api__label" for="apiBase">API</label>
+            <input id="apiBase" class="input input--sm" placeholder="http://127.0.0.1:8010" />
+            <button id="saveApi" class="btn btn--ghost btn--sm">Save</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="hero">
+        <h1>Tell us what you like.</h1>
+        <p>
+          Add titles you enjoyed and/or describe a vibe on the left. Use the filter icon (top right) to narrow
+          type, year, runtime, and genres. Results show below with optional trailers.
+        </p>
+      </section>
+
+      <section class="workspace" aria-label="Recommendations input">
+        <div class="workspace__row">
+          <div class="card">
+            <div class="card__head">
+              <h2>Liked items</h2>
+              <div class="pill">Search → Add → Recommend</div>
+            </div>
+
+            <div class="field">
+              <label>Search by title</label>
+              <input id="searchInput" class="input" placeholder="Type a movie/series name (e.g. Game of Thrones)" />
+              <div id="searchHelp" class="help"></div>
+            </div>
+
+            <div class="field">
+              <label>Suggestions</label>
+              <select id="suggestions" class="input"></select>
+              <div class="row row--tight">
+                <button id="addLiked" class="btn">Add</button>
+                <button id="clearLiked" class="btn btn--ghost">Clear</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Liked list</label>
+              <div id="likedList" class="liked"></div>
+            </div>
+
+            <div class="row">
+              <div class="field field--inline">
+                <label for="topKLiked">Top K</label>
+                <input id="topKLiked" class="input input--sm" type="number" min="1" max="50" value="5" />
+              </div>
+              <button id="recommendLiked" class="btn btn--primary">Recommend</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__head">
+              <h2>Free-text prompt</h2>
+              <div class="pill">Describe a vibe</div>
+            </div>
+
+            <div class="field">
+              <label>What do you feel like watching?</label>
+              <textarea
+                id="queryInput"
+                class="input textarea"
+                placeholder="e.g. mind-bending sci-fi with twists, heists, and strong pacing"
+                rows="6"
+              ></textarea>
+            </div>
+
+            <div class="row">
+              <div class="field field--inline">
+                <label for="topKQuery">Top K</label>
+                <input id="topKQuery" class="input input--sm" type="number" min="1" max="50" value="5" />
+              </div>
+              <button id="recommendQuery" class="btn btn--primary">Recommend</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="results">
+        <div class="results__head">
+          <h2>Results</h2>
+          <div class="row row--tight" style="justify-content:flex-end; gap:10px; align-items:center">
+            <div id="status" class="status"></div>
+          </div>
+        </div>
+        <div id="shareBar" class="sharebar" style="display:none"></div>
+        <div id="results" class="results__grid"></div>
+      </section>
+
+      <footer class="footer">
+        <div>
+          Tip: for trailers, set <span class="mono">YOUTUBE_API_KEY</span> on the API server. If not set, we’ll show
+          a YouTube search link.
+        </div>
+      </footer>
+    </main>
+
+    <div id="filterPanel" class="filter-panel" role="dialog" aria-modal="true" aria-labelledby="filterPanelTitle" aria-hidden="true">
+      <button type="button" id="filterBackdrop" class="filter-panel__backdrop" tabindex="-1" aria-label="Close filters"></button>
+      <div class="filter-panel__sheet">
+        <div class="filter-panel__head">
+          <h2 id="filterPanelTitle">Filters</h2>
+          <button type="button" id="filterCloseBtn" class="xbtn" aria-label="Close filters">Close</button>
+        </div>
+        <p class="filter-panel__hint">Optional. Applies to both liked and free-text recommendations.</p>
+
+        <div class="grid2">
+          <div class="field">
+            <label>Type</label>
+            <select id="filterKind" class="input">
+              <option value="">Any</option>
+              <option value="movie">Movie</option>
+              <option value="series">Series</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Certificate</label>
+            <select id="filterCert" class="input">
+              <option value="">Any</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="field">
+            <label>Year min</label>
+            <input id="filterYearMin" class="input" type="number" placeholder="e.g. 2000" />
+          </div>
+          <div class="field">
+            <label>Year max</label>
+            <input id="filterYearMax" class="input" type="number" placeholder="e.g. 2024" />
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="field">
+            <label>Runtime min (minutes)</label>
+            <input id="filterRuntimeMin" class="input" type="number" placeholder="e.g. 80" />
+          </div>
+          <div class="field">
+            <label>Runtime max (minutes)</label>
+            <input id="filterRuntimeMax" class="input" type="number" placeholder="e.g. 180" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Genres</label>
+          <div id="filterGenres" class="genres"></div>
+          <div class="help">Pick 0+ genres. (Leave empty for any genre.)</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./deploy-config.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

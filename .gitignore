@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.python-version
+
+# Build artifacts / model cache (generate locally with export_bundle.py)
+.cache/
+artifacts/
+
+# Runtime data
+.data/
+
+# Secrets — NEVER commit
+.env
+.env.*
+credentials/**/*.secret
+credentials/telethon_session.session
+Credential.txt
+Key/
+
+# Local k8s secrets
+deploy/k8s/secret-youtube.yaml
+
+# Locust HTML reports (large, binary-ish)
+Locust_*.html
+locust_*.html
+
