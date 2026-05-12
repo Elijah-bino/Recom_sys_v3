@@ -180,14 +180,10 @@ if _frontend_dir.exists():
 def health() -> dict[str, Any]:
     yt = _yt()
     tmdb = TMDBTrailerResolver()
-    # Lazy: matrix is only built when needed (or when this endpoint is called).
-    try:
-        mat = _item_matrix()
-        matrix_ok = bool(mat is not None and getattr(mat, "shape", None))
-        d = int(mat.shape[1]) if matrix_ok else None
-    except Exception:
-        matrix_ok = False
-        d = None
+    # IMPORTANT: keep /health fast on free hosts (cold start can be slow).
+    # Do NOT trigger embedding matrix build here.
+    matrix_ok = False
+    d = None
 
     return {
         "ok": True,
@@ -199,6 +195,18 @@ def health() -> dict[str, Any]:
         "youtube_quota_exceeded": bool(getattr(yt, "quota_exceeded", False)),
         "ui_mounted": _frontend_dir.exists(),
     }
+
+
+@app.post("/warmup")
+def warmup() -> dict[str, Any]:
+    """
+    Trigger building/loading the item matrix.
+    Call this once after deploy or after catalog refresh.
+    """
+    mat = _item_matrix()
+    matrix_ok = bool(mat is not None and getattr(mat, "shape", None))
+    d = int(mat.shape[1]) if matrix_ok else None
+    return {"ok": True, "matrix_ready": matrix_ok, "matrix_dim": d}
 
 
 @app.get("/search")
