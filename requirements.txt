@@ -1,8 +1,11 @@
 pandas>=2.2.0
 numpy>=1.26.0
 scikit-learn>=1.5.0
-torch>=2.2.0
-torchvision>=0.17.0
+# Render/free Linux instances should use CPU-only PyTorch.
+# This avoids pulling huge CUDA wheels (slow builds, memory bloat).
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.2.2+cpu
+torchvision==0.17.2+cpu
 sentence-transformers>=3.0.0
 tqdm>=4.66.0
 fastapi>=0.115.0

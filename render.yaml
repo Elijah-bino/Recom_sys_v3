@@ -5,7 +5,7 @@ services:
     name: recomsys-api
     runtime: python
     buildCommand: pip install --upgrade pip && pip install -r requirements.txt
-    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    startCommand: python render_start.py
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
