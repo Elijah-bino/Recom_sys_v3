@@ -15,6 +15,8 @@ def main() -> None:
         print(f"Invalid PORT={port_raw!r}", file=sys.stderr)
         raise SystemExit(2)
 
+    print(f"[render_start] PORT={port} (raw={port_raw!r})", flush=True)
+    print("[render_start] Starting uvicorn...", flush=True)
     uvicorn.run("api:app", host="0.0.0.0", port=port, log_level="info")
 
 
