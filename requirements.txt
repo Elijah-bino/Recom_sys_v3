@@ -4,8 +4,10 @@ scikit-learn>=1.5.0
 # Render/free Linux instances should use CPU-only PyTorch.
 # This avoids pulling huge CUDA wheels (slow builds, memory bloat).
 --extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.2.2+cpu
-torchvision==0.17.2+cpu
+# Use a CPU wheel version that exists on the PyTorch index.
+# (Older pins like 2.2.x may not be available for newer Python versions.)
+torch==2.11.0+cpu
+torchvision==0.26.0+cpu
 sentence-transformers>=3.0.0
 tqdm>=4.66.0
 fastapi>=0.115.0
